@@ -44,7 +44,7 @@ def load_user(user_id):
 
 @app.route('/')
 def home():
-    return Response("home: <a href='/login/'>Login</a> <a href='/login_top'>index画面</a> <a href='/logout/'>Logout</a>")
+    return Response("home: <a href='/login/'>Login</a> <a href='/login_top/'>index画面</a> <a href='/logout/'>Logout</a>")
 
 # ログインしないと表示されないパス
 @app.route('/protected/')
@@ -63,7 +63,7 @@ def login():
         if(request.form["username"] in user_check and request.form["password"] == user_check[request.form["username"]]["password"]):
             # ユーザーが存在した場合はログイン
             login_user(users.get(user_check[request.form["username"]]["id"]))
-            return redirect('/login_top')
+            return redirect('/login_top/')
         else:
             return abort(401)
     else:
@@ -80,7 +80,7 @@ def logout():
     ''')
 
 
-@app.route('/login_top', methods={'POST', 'GET'})
+@app.route('/login_top/', methods={'POST', 'GET'})
 @login_required
 def index():
     if request.method == 'GET':
@@ -96,19 +96,20 @@ def index():
 
         db.session.add(new_post)
         db.session.commit()
-        return redirect('/login_top')
+        return redirect('/login_top/')
 
-@app.route('/create')
+@app.route('/login_top/create')
 @login_required
 def create():
     return render_template('create.html')
 
-@app.route('/detail/<int:id>')
+@app.route('/login_top/detail/<int:id>')
+@login_required
 def read(id):
     post = Post.query.get(id)
     return render_template('detail.html', post=post)
 
-@app.route('/update/<int:id>', methods={'GET', 'POST'})
+@app.route('/login_top/update/<int:id>', methods={'GET', 'POST'})
 @login_required
 def update(id):
     post = Post.query.get(id)
@@ -121,15 +122,15 @@ def update(id):
         post.due = datetime.strptime(request.form.get('due'), '%Y-%m-%d')
 
         db.session.commit()
-        return redirect('/login_top')
+        return redirect('/login_top/')
 
-@app.route('/delete/<int:id>')
+@app.route('/login_top/delete/<int:id>')
 @login_required
 def delete(id):
     post = Post.query.get(id)
     db.session.delete(post)
     db.session.commit()
-    return redirect('/login_top')
+    return redirect('/login_top/')
 
 
 if __name__ == "__main__":

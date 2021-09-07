@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block body %}
-<a class="btn btn-info btn-lg m-5" href="/create" role="button">CREATE NEW TASK</a>
+<a class="btn btn-info btn-lg m-5" href="/login_top/create" role="button">CREATE NEW TASK</a>
 <a class="btn btn-info btn-lg m-5" href="/logout/" role="button">LOG OUT</a>
 {% for post in posts %}
 
@@ -13,9 +13,9 @@
       {% endif %}
     　<h2 class="card-title">タイトル：{{ post.title }}</h2>
     　<p>期限：{{ post.due.date() }}</p>
-    　<a class="btn btn-secondary btn-sm" href="detail/{{ post.id }}" role="button">Detail</a>
-    　<a class="btn btn-success btn-sm" href="update/{{ post.id }}" role="button">Update</a>
-    　<a class="btn btn-danger btn-sm" href="delete/{{ post.id }}" role="button">Delete</a>
+    　<a class="btn btn-secondary btn-sm" href="/login_top/detail/{{ post.id }}" role="button">Detail</a>
+    　<a class="btn btn-success btn-sm" href="/login_top/update/{{ post.id }}" role="button">Update</a>
+    　<a class="btn btn-danger btn-sm" href="/login_top/delete/{{ post.id }}" role="button">Delete</a>
     </div>
   </div>
 
