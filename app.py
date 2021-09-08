@@ -8,16 +8,31 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo.db'
 db = SQLAlchemy(app)
 
+#***********別ファイルに移植予定****************
+
+ACCEPTED_IP = ["127.0.0.1","192.168.11.2"]
+
+def ip_check(func):
+    def wrapper(*args, **kwargs):
+        if request.remote_addr in ACCEPTED_IP:
+            print('IP Check : OK')
+            return func(*args, **kwargs)
+        else:
+            print("403")
+            return abort(403)
+    return wrapper
+
+#***********別ファイルに移植予定****************
+
+
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True) 
     title = db.Column(db.String(30), nullable=False)
     detail = db.Column(db.String(100))
     due = db.Column(db.DateTime, nullable=True)
 
-class Bunshou(str):
-    nakami = str
-    print(nakami)
-
+class Bunshou:
+    nakami = "aaaaaaaaaa"
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -47,6 +62,7 @@ def load_user(user_id):
     return users.get(int(user_id))
 
 @app.route('/')
+@ip_check
 def home():
     # return Response("home: <a href='/login/'>Login</a> <a href='/login_top/'>index画面</a> <a href='/logout/'>Logout</a>")
      return render_template("access_top.html")
@@ -123,14 +139,18 @@ def update(id):
 
     post = Post.query.get(id)
     print(post.detail)
-    f = open(post.title+".txt", 'r', encoding='UTF-8')
-    print(f.read())
+ 
 
-    bunshou = Bunshou(f.read())
 
     if request.method == 'GET':
         #updateのページ
-        return render_template('update.html', post=post, bunshou=bunshou)
+
+        fi = open(post.title+".txt", 'r', encoding='UTF-8')
+        aaa = fi.read()
+        print(aaa)
+        fi.close
+
+        return render_template('update.html', post=post, aaa=aaa)
     else:
         # post.title = request.form.get('title')
         # post.detail = request.form.get('detail')
@@ -140,11 +160,18 @@ def update(id):
             print(request.form.get('detail'))
             f = open(request.form.get('title')+'.txt', 'a', encoding='UTF-8')
 
+            f.write("##################################")
+            f.write("\n")
+            f.write(request.form.get('username'))
+            f.write("\n")
             f.write(request.form.get('detail'))
             f.write("\n")
             f.write(str(datetime.now()))
+            f.write("\n")
+            f.write("##################################")
             f.write("\n\n")
             
+            f.close
 
     
         # db.session.commit()
