@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block body %}
+<p>{{ current_user.name }} さんようこそ！</p>
 <a class="btn btn-info btn-lg m-5" href="/login_top/create" role="button">CREATE NEW TASK</a>
 <a class="btn btn-info btn-lg m-5" href="/logout/" role="button">LOG OUT</a>
 {% for post in posts %}
@@ -18,7 +19,6 @@
     　<a class="btn btn-danger btn-sm" href="/login_top/delete/{{ post.id }}" role="button">Delete</a>
     </div>
   </div>
-
 
 
 {% endfor %}

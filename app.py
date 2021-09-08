@@ -14,6 +14,10 @@ class Post(db.Model):
     detail = db.Column(db.String(100))
     due = db.Column(db.DateTime, nullable=True)
 
+class Bunshou(str):
+    nakami = str
+    print(nakami)
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -44,7 +48,8 @@ def load_user(user_id):
 
 @app.route('/')
 def home():
-    return Response("home: <a href='/login/'>Login</a> <a href='/login_top/'>index画面</a> <a href='/logout/'>Logout</a>")
+    # return Response("home: <a href='/login/'>Login</a> <a href='/login_top/'>index画面</a> <a href='/logout/'>Logout</a>")
+     return render_template("access_top.html")
 
 # ログインしないと表示されないパス
 @app.route('/protected/')
@@ -112,16 +117,37 @@ def read(id):
 @app.route('/login_top/update/<int:id>', methods={'GET', 'POST'})
 @login_required
 def update(id):
+
+
+
+
     post = Post.query.get(id)
+    print(post.detail)
+    f = open(post.title+".txt", 'r', encoding='UTF-8')
+    print(f.read())
+
+    bunshou = Bunshou(f.read())
+
     if request.method == 'GET':
         #updateのページ
-        return render_template('update.html', post=post)
+        return render_template('update.html', post=post, bunshou=bunshou)
     else:
-        post.title = request.form.get('title')
-        post.detail = request.form.get('detail')
-        post.due = datetime.strptime(request.form.get('due'), '%Y-%m-%d')
+        # post.title = request.form.get('title')
+        # post.detail = request.form.get('detail')
+        # post.due = datetime.strptime(request.form.get('due'), '%Y-%m-%d')
 
-        db.session.commit()
+        if request.form.get('detail') != "":
+            print(request.form.get('detail'))
+            f = open(request.form.get('title')+'.txt', 'a', encoding='UTF-8')
+
+            f.write(request.form.get('detail'))
+            f.write("\n")
+            f.write(str(datetime.now()))
+            f.write("\n\n")
+            
+
+    
+        # db.session.commit()
         return redirect('/login_top/')
 
 @app.route('/login_top/delete/<int:id>')

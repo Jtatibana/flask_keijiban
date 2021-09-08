@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block body %}
-
+<p>{{ current_user.name }} さんようこそ！</p>
 <form class="m-5" action="/login_top/update/{{post.id}}" method="POST">
     <div class="mb-3 pd-3">
       <label for="title">Title</label>
@@ -8,7 +8,7 @@
     </div>
     <div class="mb-3 pd-3">
         <label for="detail">Detail</label>
-        <input type="text" class="form-control" name="detail" value="{{ post.detail }}">
+        <textarea class="form-control, " name="detail">{{ bunshou.nakami }}</textarea>
     </div>
     <div class="mb-3 pd-3">
         <label for="due">Due</label>
