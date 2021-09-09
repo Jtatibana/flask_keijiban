@@ -1,4 +1,5 @@
 from datetime import datetime, date
+from os import name
 from flask import Flask, render_template, request, redirect, url_for, Response, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin
@@ -26,13 +27,18 @@ def ip_check(func):
 
 
 class Post(db.Model):
+    __tablename__="post"
     id = db.Column(db.Integer, primary_key=True) 
     title = db.Column(db.String(30), nullable=False)
     detail = db.Column(db.String(100))
     due = db.Column(db.DateTime, nullable=True)
 
-class Bunshou:
-    nakami = "aaaaaaaaaa"
+class UserResist(db.Model):
+    __tablename__="user_manage"
+    id = db.Column(db.Integer, primary_key=True) 
+    name = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(50))
+    auth_flag = db.Column(db.Integer, nullable=True)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -50,6 +56,9 @@ users = {
     2: User(2, "user02", "password")
 }
 
+
+###ゴミみたいな処理いずれ改変予定
+###つまりuser_checkにusers.valuesのパスワードとidを入れちょるだけ
 # ユーザーチェックに使用する辞書作成
 nested_dict = lambda: defaultdict(nested_dict)
 user_check = nested_dict()
@@ -62,7 +71,7 @@ def load_user(user_id):
     return users.get(int(user_id))
 
 @app.route('/')
-@ip_check
+#@ip_check
 def home():
     # return Response("home: <a href='/login/'>Login</a> <a href='/login_top/'>index画面</a> <a href='/logout/'>Logout</a>")
      return render_template("access_top.html")
@@ -76,13 +85,49 @@ def protected():
     <a href="/logout/">logout</a>
     ''')
 
+# アカウントクリエイト
+@app.route('/account_create/', methods=["GET", "POST"])
+def ac_create():
+    if(request.method == "POST"):
+
+        print("返事は返されているか？")
+        print(request.form["resist_username"])
+        print(request.form["resist_username"] in user_check)
+        print()
+        # ユーザーチェック
+        if(request.form["resist_username"] in user_check and request.form["resist_password"] == user_check[request.form["resist_username"]]["password"]):
+                    return abort(401) 
+        else:
+                    create_account_id = len(users)+1
+                    users[create_account_id] = User(len(users)+1, request.form["resist_username"], request.form["resist_password"])
+                    print("ああああ"+users[3].name)
+
+                    # user_name = request.form.get('resist_username')
+                    # user_password = request.form.get('resist_password')
+                    # new_account = UserResist(name=user_name, password=user_password)
+
+                    #db.session.add(new_account)
+                    #db.session.commit()
+
+
+                    user_check[request.form["resist_username"]]["password"] = request.form["resist_password"]
+                    user_check[request.form["resist_username"]]["id"] = create_account_id
+
+                     # ユーザーが存在した場合はログイン
+                    login_user(users[create_account_id])
+                    return redirect('/login_top/')
+    else:
+        return render_template("account_create.html")
+
 # ログインパス
 @app.route('/login/', methods=["GET", "POST"])
 def login():
     if(request.method == "POST"):
+        print(request.form["username"] in user_check)
         # ユーザーチェック
         if(request.form["username"] in user_check and request.form["password"] == user_check[request.form["username"]]["password"]):
             # ユーザーが存在した場合はログイン
+            print(user_check[request.form["username"]]["id"])
             login_user(users.get(user_check[request.form["username"]]["id"]))
             return redirect('/login_top/')
         else:
@@ -160,11 +205,18 @@ def update(id):
             print(request.form.get('detail'))
             f = open(request.form.get('title')+'.txt', 'a', encoding='UTF-8')
 
+            for key, value in request.form.items():
+                print("===============")
+                print(key, value)
+
             f.write("##################################")
             f.write("\n")
-            f.write(request.form.get('username'))
+            f.write("発言者："+request.form.get('username'))
+            f.write("\n")
+            f.write("========コメント内容========")
             f.write("\n")
             f.write(request.form.get('detail'))
+            f.write("\n")
             f.write("\n")
             f.write(str(datetime.now()))
             f.write("\n")

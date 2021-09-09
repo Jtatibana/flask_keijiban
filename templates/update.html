@@ -1,15 +1,18 @@
 {% extends 'base.html' %}
 {% block body %}
-<p name="username">{{ current_user.name }} さんようこそ！</p>
+<p>{{ current_user.name }} さんようこそ！</p>
 <a style="white-space : pre-wrap;">{{ aaa }} ←今までの書き込み</a>
 <form class="m-5" action="/login_top/update/{{post.id}}" method="POST">
-  <input "type=text" name="username"value="{{ current_user.name }}">
-    <div class="mb-3 pd-3">
+
+  <input type="hidden" name="username"value="{{ current_user.name }}">
+  <input type="hidden" name="title"value="{{ post.title }}">
+
+    <!-- <div class="mb-3 pd-3">
       <label for="title">Title</label>
       <input type="text" class="form-control" name="title" value="{{ post.title }}">
-    </div>
+    </div> -->
     <div class="mb-3 pd-3">
-        <label for="detail"></label>
+        <label for="detail">コメント入力欄</label>
         <textarea class="form-control, style="white-space : pre-wrap;", " name="detail"></textarea>
     </div>
     <!-- <div class="mb-3 pd-3">
