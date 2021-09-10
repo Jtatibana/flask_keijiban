@@ -11,7 +11,7 @@ db = SQLAlchemy(app)
 
 #***********別ファイルに移植予定****************
 
-ACCEPTED_IP = ["127.0.0.1","192.168.11.2"]
+ACCEPTED_IP = ["127.0.0.1","14.3.59.247"]
 
 def ip_check(func):
     def wrapper(*args, **kwargs):
@@ -27,17 +27,15 @@ def ip_check(func):
 
 
 class Post(db.Model):
-    __tablename__="post"
     id = db.Column(db.Integer, primary_key=True) 
     title = db.Column(db.String(30), nullable=False)
     detail = db.Column(db.String(100))
     due = db.Column(db.DateTime, nullable=True)
 
-class UserResist(db.Model):
-    __tablename__="user_manage"
-    id = db.Column(db.Integer, primary_key=True) 
-    name = db.Column(db.String(50), nullable=False)
-    password = db.Column(db.String(50))
+class User_manage(db.Model):
+    u_id = db.Column(db.Integer, primary_key=True) 
+    u_name = db.Column(db.String(50), nullable=False)
+    u_password = db.Column(db.String(50), nullable=False)
     auth_flag = db.Column(db.Integer, nullable=True)
 
 login_manager = LoginManager()
@@ -51,24 +49,38 @@ class User(UserMixin):
         self.password = password
 
 # ログイン用ユーザー作成
-users = {
-    1: User(1, "user01", "password"),
-    2: User(2, "user02", "password")
-}
+# users = {
+#     1: User(1, "user01", "password"),
+#     2: User(2, "user02", "password")
+# }
 
 
 ###ゴミみたいな処理いずれ改変予定
 ###つまりuser_checkにusers.valuesのパスワードとidを入れちょるだけ
 # ユーザーチェックに使用する辞書作成
+# nested_dict = lambda: defaultdict(nested_dict)
+# user_check = nested_dict()
+# for i in users.values():
+#     user_check[i.name]["password"] = i.password
+#     user_check[i.name]["id"] = i.id
+
+user_manages = User_manage.query.all()
+###ゴミみたいな処理いずれ改変予定
+###つまりuser_checkにusers.valuesのパスワードとidを入れちょるだけ
+# ユーザーチェックに使用する辞書作成
 nested_dict = lambda: defaultdict(nested_dict)
-user_check = nested_dict()
-for i in users.values():
-    user_check[i.name]["password"] = i.password
-    user_check[i.name]["id"] = i.id
+user_check_for_db = nested_dict()
+for i in user_manages:
+    user_check_for_db[i.u_name]["password"] = i.u_password
+    user_check_for_db[i.u_name]["id"] = i.u_id
 
 @login_manager.user_loader
 def load_user(user_id):
-    return users.get(int(user_id))
+    #return users.get(int(user_id))
+
+    user_collum = User_manage.query.get(int(user_id))
+    iikagennnisiro_user = User(user_id, user_collum.u_name, user_collum.u_password)
+    return iikagennnisiro_user
 
 @app.route('/')
 #@ip_check
@@ -92,30 +104,53 @@ def ac_create():
 
         print("返事は返されているか？")
         print(request.form["resist_username"])
-        print(request.form["resist_username"] in user_check)
+        #print(request.form["resist_username"] in user_check)
         print()
         # ユーザーチェック
-        if(request.form["resist_username"] in user_check and request.form["resist_password"] == user_check[request.form["resist_username"]]["password"]):
-                    return abort(401) 
+        if(request.form["resist_username"] in user_check_for_db and request.form["resist_password"] == user_check_for_db[request.form["resist_username"]]["password"]):
+                print("アカウントクリエイトのアボート")
+                return abort(401) 
         else:
-                    create_account_id = len(users)+1
-                    users[create_account_id] = User(len(users)+1, request.form["resist_username"], request.form["resist_password"])
-                    print("ああああ"+users[3].name)
+                #create_account_id = len(users)+1
+                #users[create_account_id] = User(len(users)+1, request.form["resist_username"], request.form["resist_password"])
+                #print("ああああ"+users[3].name)
 
-                    # user_name = request.form.get('resist_username')
-                    # user_password = request.form.get('resist_password')
-                    # new_account = UserResist(name=user_name, password=user_password)
+                user_name = request.form.get('resist_username')
+                user_password = request.form.get('resist_password')
+                new_account = User_manage(u_name=user_name, u_password=user_password)
 
-                    #db.session.add(new_account)
-                    #db.session.commit()
+                db.session.add(new_account)
+                db.session.commit()
+
+                poo = Post.query.filter_by(title = "ダンスレッスン").all()
+                count_kaiten = 0
+                for i in poo:
+                    count_kaiten += 1
+                    print("回転数",count_kaiten)
+                    print(i)
+                    print(i.id)
+                    print(i.title)
 
 
-                    user_check[request.form["resist_username"]]["password"] = request.form["resist_password"]
-                    user_check[request.form["resist_username"]]["id"] = create_account_id
+                print("↓user_manageのデータベースから持ってきた対象カラムは（名前で指定）↓")
+                print(user_name)
+                #要修正点-ほんとはallで取得したくない
+                ttt = User_manage.query.filter_by(u_name = user_name).all()[0].u_id
+                #ttt[0].u_id
+                print(ttt)
 
-                     # ユーザーが存在した場合はログイン
-                    login_user(users[create_account_id])
-                    return redirect('/login_top/')
+
+                user_check_for_db[request.form["resist_username"]]["password"] = request.form["resist_password"]
+                #user_check_for_db[request.form["resist_username"]]["id"] = create_account_id
+                user_check_for_db[request.form["resist_username"]]["id"] = User_manage.query.filter_by(u_name = user_name).all()[0].u_id
+
+
+                user = User(ttt, user_name, user_password)
+
+                # ユーザーが存在した場合はログイン
+                login_user(user)
+                #return redirect('/login_top/')
+                return redirect('/login_top/')
     else:
         return render_template("account_create.html")
 
@@ -123,14 +158,23 @@ def ac_create():
 @app.route('/login/', methods=["GET", "POST"])
 def login():
     if(request.method == "POST"):
-        print(request.form["username"] in user_check)
+        #user_manage = User_manage(request.form["username"],request.form["password"])
+
+
+        #print(request.form["username"] in user_check)
         # ユーザーチェック
-        if(request.form["username"] in user_check and request.form["password"] == user_check[request.form["username"]]["password"]):
+        if(request.form["username"] in user_check_for_db and request.form["password"] == user_check_for_db[request.form["username"]]["password"]):
             # ユーザーが存在した場合はログイン
-            print(user_check[request.form["username"]]["id"])
-            login_user(users.get(user_check[request.form["username"]]["id"]))
+            #print(user_check_for_db[request.form["username"]]["id"])
+
+            ttt_id = User_manage.query.filter_by(u_name = request.form["username"]).all()[0].u_id
+
+            login_form_user_status = User(ttt_id, request.form["username"], request.form["password"])
+
+            login_user(login_form_user_status)
             return redirect('/login_top/')
         else:
+            print("ログイン画面のアボート")
             return abort(401)
     else:
         return render_template("login.html")
@@ -150,15 +194,15 @@ def logout():
 @login_required
 def index():
     if request.method == 'GET':
-        posts = Post.query.order_by(Post.due).all()
-        return render_template('index.html', posts=posts, today=date.today())
+        posts = Post.query.all()
+        return render_template('index.html', posts=posts)
     else:
         title = request.form.get('title')
         detail = request.form.get('detail')
-        due = request.form.get('due')
+        #due = request.form.get('due')
 
-        due = datetime.strptime(due, '%Y-%m-%d')
-        new_post = Post(title=title, detail=detail, due=due)
+        #due = datetime.strptime(due, '%Y-%m-%d')
+        new_post = Post(title=title, detail=detail)
 
         db.session.add(new_post)
         db.session.commit()
@@ -190,6 +234,9 @@ def update(id):
     if request.method == 'GET':
         #updateのページ
 
+        #テキストファイルがなかったら作成する↓要修正
+        fi0 = open(post.title+".txt", 'w', encoding='UTF-8')
+        fi0.close
         fi = open(post.title+".txt", 'r', encoding='UTF-8')
         aaa = fi.read()
         print(aaa)
