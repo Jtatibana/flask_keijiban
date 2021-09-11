@@ -92,7 +92,7 @@ def protected():
 
 # アカウントクリエイト
 @app.route('/account_create/', methods=["GET", "POST"])
-@ip_check
+#@ip_check
 def ac_create():
     if(request.method == "POST"):
 
