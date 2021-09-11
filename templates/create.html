@@ -2,13 +2,14 @@
 {% block body %}
 
 <form class="m-5" action="/login_top/" method="POST">
+    <input type="hidden" name="username"value="{{ current_user.name }}">
     <div class="mb-3 pd-3">
       <label for="title">Title</label>
       <input type="text" class="form-control" name="title">
     </div>
     <div class="mb-3 pd-3">
-        <label for="detail">Detail</label>
-        <input type="text" class="form-control" name="detail">
+        <label for="detail">最初のコメント</label>
+        <textarea class="form-control" name="detail"></textarea>
     </div>
     <!-- <div class="mb-3 pd-3">
         <label for="due">Due</label>

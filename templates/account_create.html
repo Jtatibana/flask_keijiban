@@ -35,12 +35,19 @@
 <body>
 <div class="account-create">
     <form action="" method="post">
-        <h2 class="text-center">ACCOUNT CREATE</h2>       
+        <h2 class="text-center">ACCOUNT CREATE</h2> 
+
+        {% if fail_flag == True %}
+        <div class="alert alert-danger" role="alert">
+            ※ご希望のアカウントは既に存在します。
+        </div>
+        {% endif %}
+
         <div class="form-group">
-            <input type="text" class="form-control" placeholder="resist_username" required="required" name="resist_username">
+            <input type="text" class="form-control" placeholder="username" required="required" name="resist_username">
         </div>
         <div class="form-group">
-            <input type="password" class="form-control" placeholder="resist_password" required="required" name="resist_password">
+            <input type="password" class="form-control" placeholder="password" required="required" name="resist_password">
         </div>
         <div class="form-group">
             <button type="submit" class="btn btn-primary btn-block">CREATE</button>

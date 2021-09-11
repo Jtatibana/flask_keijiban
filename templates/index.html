@@ -1,17 +1,20 @@
 {% extends 'base.html' %}
 {% block body %}
 <p>{{ current_user.name }} さんようこそ！</p>
-<a class="btn btn-info btn-lg m-5" href="/login_top/create" role="button">CREATE NEW TASK</a>
+<a class="btn btn-info btn-lg m-5" href="/login_top/create" role="button">掲示板作成</a>
 <a class="btn btn-info btn-lg m-5" href="/logout/" role="button">LOG OUT</a>
-{% for post in posts %}
+{% for board in boards %}
 
 <div class="card w-50 mb-3" style="margin: auto;">
     <div class="card-body">
 
-    　<h2 class="card-title">掲示板タイトル：{{ post.title }}</h2>
+    　<h2 class="card-title">掲示板タイトル：{{ board.b_title }}</h2>
+      <p>最終コメント：{{ board.last_comment_day.date() }} {{ board.last_comment_day.time() }}</p>
 
-    　<a class="btn btn-success btn-sm" href="/login_top/update/{{ post.id }}" role="button">Update</a>
-    　<a class="btn btn-danger btn-sm" href="/login_top/delete/{{ post.id }}" role="button">Delete</a>
+    　<a class="btn btn-success btn-sm" href="/login_top/update/{{ board.b_id }}" role="button">掲示板へ</a>
+      {% if board.create_user == current_user.name %}
+    　<a class="btn btn-danger btn-sm" href="/login_top/delete/{{ board.b_id }}" role="button">掲示板削除</a>
+      {% endif %}
     </div>
   </div>
 

@@ -32,9 +32,17 @@ class Post(db.Model):
     detail = db.Column(db.String(100))
     due = db.Column(db.DateTime, nullable=True)
 
+class Board_status(db.Model):
+    b_id = db.Column(db.Integer, primary_key=True) 
+    b_title = db.Column(db.String(100), nullable=False)
+    create_user = db.Column(db.String(50))
+    create_day = db.Column(db.DateTime)
+    last_comment_day = db.Column(db.DateTime)
+    num_comment = db.Column(db.Integer) 
+
 class User_manage(db.Model):
     u_id = db.Column(db.Integer, primary_key=True) 
-    u_name = db.Column(db.String(50), nullable=False)
+    u_name = db.Column(db.String(50), unique = True, nullable=False)
     u_password = db.Column(db.String(50), nullable=False)
     auth_flag = db.Column(db.Integer, nullable=True)
 
@@ -48,21 +56,6 @@ class User(UserMixin):
         self.name = name
         self.password = password
 
-# ログイン用ユーザー作成
-# users = {
-#     1: User(1, "user01", "password"),
-#     2: User(2, "user02", "password")
-# }
-
-
-###ゴミみたいな処理いずれ改変予定
-###つまりuser_checkにusers.valuesのパスワードとidを入れちょるだけ
-# ユーザーチェックに使用する辞書作成
-# nested_dict = lambda: defaultdict(nested_dict)
-# user_check = nested_dict()
-# for i in users.values():
-#     user_check[i.name]["password"] = i.password
-#     user_check[i.name]["id"] = i.id
 
 user_manages = User_manage.query.all()
 ###ゴミみたいな処理いずれ改変予定
@@ -107,9 +100,9 @@ def ac_create():
         #print(request.form["resist_username"] in user_check)
         print()
         # ユーザーチェック
-        if(request.form["resist_username"] in user_check_for_db and request.form["resist_password"] == user_check_for_db[request.form["resist_username"]]["password"]):
+        if(request.form["resist_username"] in user_check_for_db):
                 print("アカウントクリエイトのアボート")
-                return abort(401) 
+                return render_template("account_create.html", fail_flag = True)
         else:
                 #create_account_id = len(users)+1
                 #users[create_account_id] = User(len(users)+1, request.form["resist_username"], request.form["resist_password"])
@@ -121,15 +114,6 @@ def ac_create():
 
                 db.session.add(new_account)
                 db.session.commit()
-
-                poo = Post.query.filter_by(title = "ダンスレッスン").all()
-                count_kaiten = 0
-                for i in poo:
-                    count_kaiten += 1
-                    print("回転数",count_kaiten)
-                    print(i)
-                    print(i.id)
-                    print(i.title)
 
 
                 print("↓user_manageのデータベースから持ってきた対象カラムは（名前で指定）↓")
@@ -152,7 +136,7 @@ def ac_create():
                 #return redirect('/login_top/')
                 return redirect('/login_top/')
     else:
-        return render_template("account_create.html")
+        return render_template("account_create.html", fail_flag = False)
 
 # ログインパス
 @app.route('/login/', methods=["GET", "POST"])
@@ -186,7 +170,8 @@ def logout():
     logout_user()
     return Response('''
     logout success!<br />
-    <a href="/login/">login</a>
+    <a href="/login/">login</a><br />
+    <a href="/">トップ画面へ</a>
     ''')
 
 
@@ -194,18 +179,23 @@ def logout():
 @login_required
 def index():
     if request.method == 'GET':
-        posts = Post.query.all()
-        return render_template('index.html', posts=posts)
+        #posts = Post.query.all()
+        #return render_template('index.html', posts=posts)
+        boards = Board_status.query.order_by(Board_status.last_comment_day.desc()).all()
+        return render_template('index.html', boards=boards)
     else:
         title = request.form.get('title')
         detail = request.form.get('detail')
         #due = request.form.get('due')
 
         #due = datetime.strptime(due, '%Y-%m-%d')
-        new_post = Post(title=title, detail=detail)
+        #new_post = Post(title=title, detail=detail)
+        get_now_time = datetime.now()
+        new_board = Board_status(b_title=title, create_user=request.form['username'], create_day=get_now_time, last_comment_day=get_now_time, num_comment=1)
 
-        db.session.add(new_post)
+        db.session.add(new_board)
         db.session.commit()
+        #return redirect('/login_top/')
         return redirect('/login_top/')
 
 @app.route('/login_top/create')
@@ -216,33 +206,32 @@ def create():
 @app.route('/login_top/detail/<int:id>')
 @login_required
 def read(id):
-    post = Post.query.get(id)
-    return render_template('detail.html', post=post)
+    #post = Post.query.get(id)
+    board = Board_status.query.get(id)
+    #return render_template('detail.html', post=post)
+    return render_template('detail.html', post=board)
 
-@app.route('/login_top/update/<int:id>', methods={'GET', 'POST'})
+@app.route('/login_top/update/<int:b_id>', methods={'GET', 'POST'})
 @login_required
-def update(id):
+def update(b_id):
 
+    print(b_id)
 
-
-
-    post = Post.query.get(id)
-    print(post.detail)
- 
-
+    #post = Post.query.get(id)
+    board = Board_status.query.get(b_id)
 
     if request.method == 'GET':
         #updateのページ
 
         #テキストファイルがなかったら作成する↓要修正
-        fi0 = open(post.title+".txt", 'w', encoding='UTF-8')
+        fi0 = open(board.b_title+".txt", 'a', encoding='UTF-8')
         fi0.close
-        fi = open(post.title+".txt", 'r', encoding='UTF-8')
-        aaa = fi.read()
-        print(aaa)
+        fi = open(board.b_title+".txt", 'r', encoding='UTF-8')
+        all_comments = fi.read()
+        print(all_comments)
         fi.close
 
-        return render_template('update.html', post=post, aaa=aaa)
+        return render_template('update.html', board=board, all_comments=all_comments)
     else:
         # post.title = request.form.get('title')
         # post.detail = request.form.get('detail')
@@ -256,31 +245,37 @@ def update(id):
                 print("===============")
                 print(key, value)
 
-            f.write("##################################")
+            
             f.write("\n")
             f.write("発言者："+request.form.get('username'))
+            f.write("\n")
+            f.write(str(datetime.now()))
             f.write("\n")
             f.write("========コメント内容========")
             f.write("\n")
             f.write(request.form.get('detail'))
             f.write("\n")
+            f.write("========コメント内容========")
             f.write("\n")
-            f.write(str(datetime.now()))
             f.write("\n")
             f.write("##################################")
             f.write("\n\n")
             
             f.close
 
+            board.last_comment_day = datetime.now()
+
+            db.session.commit()
+
     
         # db.session.commit()
         return redirect('/login_top/')
 
-@app.route('/login_top/delete/<int:id>')
+@app.route('/login_top/delete/<int:b_id>')
 @login_required
-def delete(id):
-    post = Post.query.get(id)
-    db.session.delete(post)
+def delete(b_id):
+    board = Board_status.query.get(b_id)
+    db.session.delete(board)
     db.session.commit()
     return redirect('/login_top/')
 
