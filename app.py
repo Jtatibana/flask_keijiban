@@ -11,7 +11,7 @@ db = SQLAlchemy(app)
 
 #***********別ファイルに移植予定****************
 
-ACCEPTED_IP = ["127.0.0.1","14.3.59.247"]
+ACCEPTED_IP = ["127.0.0.1","14.3.59.247","126.51.248.65"]
 
 def ip_check(func):
     def wrapper(*args, **kwargs):
@@ -92,6 +92,7 @@ def protected():
 
 # アカウントクリエイト
 @app.route('/account_create/', methods=["GET", "POST"])
+@ip_check
 def ac_create():
     if(request.method == "POST"):
 
