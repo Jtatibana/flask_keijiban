@@ -225,9 +225,9 @@ def update(b_id):
         #updateのページ
 
         #テキストファイルがなかったら作成する↓要修正
-        fi0 = open(board.b_title+".txt", 'a', encoding='UTF-8')
+        fi0 = open(board.b_title+str(board.b_id)+".txt", 'a', encoding='UTF-8')
         fi0.close
-        fi = open(board.b_title+".txt", 'r', encoding='UTF-8')
+        fi = open(board.b_title+str(board.b_id)+".txt", 'r', encoding='UTF-8')
         all_comments = fi.read()
         print(all_comments)
         fi.close
@@ -240,7 +240,7 @@ def update(b_id):
 
         if request.form.get('detail') != "":
             print(request.form.get('detail'))
-            f = open(request.form.get('title')+'.txt', 'a', encoding='UTF-8')
+            f = open(request.form.get('title')+str(board.b_id)+'.txt', 'a', encoding='UTF-8')
 
             for key, value in request.form.items():
                 print("===============")
