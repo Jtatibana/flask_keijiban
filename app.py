@@ -4,10 +4,16 @@ from flask import Flask, render_template, request, redirect, url_for, Response, 
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin
 from collections import defaultdict
+import os
+import time
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo.db'
 db = SQLAlchemy(app)
+
+#pythonanywhere上で時間取得がずれるため、それを補正するコード
+os.environ["TZ"] = "Asia/Tokyo"
+time.tzset()
 
 #***********別ファイルに移植予定****************
 
@@ -75,11 +81,21 @@ def load_user(user_id):
     iikagennnisiro_user = User(user_id, user_collum.u_name, user_collum.u_password)
     return iikagennnisiro_user
 
+
+@app.route('/access_limit/')
+@ip_check
+def access_limit():
+    # return Response("home: <a href='/login/'>Login</a> <a href='/login_top/'>index画面</a> <a href='/logout/'>Logout</a>")
+    # return render_template("access_top.html")
+    # メンテナンス時には以下を表示
+     return render_template("maintenance.html")
+
+
 @app.route('/')
 #@ip_check
 def home():
     # return Response("home: <a href='/login/'>Login</a> <a href='/login_top/'>index画面</a> <a href='/logout/'>Logout</a>")
-     return render_template("access_top.html")
+    return render_template("access_top.html")
 
 # ログインしないと表示されないパス
 @app.route('/protected/')
