@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
 {% block body %}
+
+<nav class="navbar navbar-light bg-light p-3">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/" style="font-size: 2rem;">A教室掲示板</a>
+  </div>
+</nav>
+
 <p>{{ current_user.name }} さんようこそ！</p>
 <a class="btn btn-info btn-lg m-5" href="/login_top/create" role="button">掲示板作成</a>
 <a class="btn btn-info btn-lg m-5" href="/logout/" role="button">LOG OUT</a>

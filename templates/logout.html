@@ -7,12 +7,7 @@
     </div>
 </nav>
 
-{%if current_user.name == null %}
-<a class="btn btn-info btn-lg m-3" href="/account_create/" role="button">NEW ACCOUNT</a>
 <a class="btn btn-info btn-lg m-3" href="/login/" role="button">LOG IN</a>
-{%else %}
-<a class="btn btn-info btn-lg m-3" href="/login_top/" role="button">掲示板一覧</a>
-<a class="btn btn-info btn-lg m-3" href="/logout/" role="button">LOG OUT</a>
-{%endif %}
+<a class="btn btn-info btn-lg m-3" href="/" role="button">TOP画面へ</a>
 
 {% endblock %}

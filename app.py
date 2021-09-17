@@ -185,11 +185,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return Response('''
-    logout success!<br />
-    <a href="/login/">login</a><br />
-    <a href="/">トップ画面へ</a>
-    ''')
+    return render_template('logout.html')
 
 
 @app.route('/login_top/', methods={'POST', 'GET'})

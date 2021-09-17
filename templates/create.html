@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
 {% block body %}
+
+<nav class="navbar navbar-light bg-light p-3">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/" style="font-size: 2rem;">掲示板作成</a>
+  </div>
+</nav>
+
 <input type="hidden" name="username"value="{{ current_user.name }}">
 <form class="m-5" action="/login_top/" method="POST">
     <input type="hidden" name="username"value="{{ current_user.name }}">

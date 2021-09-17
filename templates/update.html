@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 {% block body %}
+<nav class="navbar navbar-light bg-light p-3">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/" style="font-size: 2rem;">{{ board.b_title }}</a>
+  </div>
+</nav>
+
 <p>{{ current_user.name }} さんようこそ！</p>
 
 <a style="white-space : pre-wrap;">{{ all_comments }} ←今までの書き込み</a>
