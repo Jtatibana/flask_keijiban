@@ -8,7 +8,8 @@
 <div class="card w-50 mb-3" style="margin: auto;">
     <div class="card-body">
 
-    　<h2 class="card-title">掲示板タイトル：{{ board.b_title }}</h2>
+    　<h2 class="card-title">{{ board.b_title }}</h2>
+      <p>コメント数：（{{ board.num_comment }}）</p>
       <p>最終コメント：{{ board.last_comment_day.date() }} {{ board.last_comment_day.time() }}</p>
 
     　<a class="btn btn-success btn-sm" href="/login_top/update/{{ board.b_id }}" role="button">掲示板へ</a>

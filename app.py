@@ -13,7 +13,7 @@ db = SQLAlchemy(app)
 
 #pythonanywhere上で時間取得がずれるため、それを補正するコード
 os.environ["TZ"] = "Asia/Tokyo"
-time.tzset()
+#time.tzset()
 
 #***********別ファイルに移植予定****************
 
@@ -202,7 +202,7 @@ def index():
         return render_template('index.html', boards=boards)
     else:
         title = request.form.get('title')
-        detail = request.form.get('detail')
+        first_comment = request.form.get('first_comment')
         #due = request.form.get('due')
 
         #due = datetime.strptime(due, '%Y-%m-%d')
@@ -212,6 +212,37 @@ def index():
 
         db.session.add(new_board)
         db.session.commit()
+
+        bord_status_id = Board_status.query.filter_by(b_title = title).all()[0].b_id
+        f = open(title+str(bord_status_id)+'.txt', 'a', encoding='UTF-8')
+        f.write("\n")
+        f.write("発言者："+request.form.get('username'))
+        f.write("\n")
+        f.write(str(datetime.now()))
+        f.write("\n")
+        f.write("========コメント内容========")
+        f.write("\n")
+        f.write(first_comment)
+        f.write("\n")
+        f.write("========コメント内容========")
+        f.write("\n")
+        f.write("\n")
+        f.write("##################################")
+        f.write("\n\n")
+        f.close
+
+        #コメントの区切りをカウントする。
+        f = open(title+str(bord_status_id)+'.txt', 'r', encoding='UTF-8')
+        txt = f.read()
+        comment_count = txt.count("##################################")
+
+        f.close
+
+        #カウントした区切り線をDBに渡し更新する。
+        for_num_comment_update = Board_status.get.query.get(bord_status_id)
+        for_num_comment_update.num_comment = comment_count
+        db.session.commit()
+                
         #return redirect('/login_top/')
         return redirect('/login_top/')
 
@@ -279,6 +310,16 @@ def update(b_id):
             f.write("\n\n")
             
             f.close
+
+            #コメントの区切りをカウントする。
+            f = open(request.form.get('title')+str(board.b_id)+'.txt', 'r', encoding='UTF-8')
+            txt = f.read()
+            comment_count = txt.count("##################################")
+            f.close
+
+            
+            #カウントした区切り線をDBに渡し更新する。
+            board.num_comment = comment_count
 
             board.last_comment_day = datetime.now()
 

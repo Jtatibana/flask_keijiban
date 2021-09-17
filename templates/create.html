@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block body %}
-
+<input type="hidden" name="username"value="{{ current_user.name }}">
 <form class="m-5" action="/login_top/" method="POST">
     <input type="hidden" name="username"value="{{ current_user.name }}">
     <div class="mb-3 pd-3">
@@ -8,8 +8,8 @@
       <input type="text" class="form-control" name="title">
     </div>
     <div class="mb-3 pd-3">
-        <label for="detail">最初のコメント</label>
-        <textarea class="form-control" name="detail"></textarea>
+        <label for="first_comment">最初のコメント</label>
+        <textarea class="form-control" name="first_comment"></textarea>
     </div>
     <!-- <div class="mb-3 pd-3">
         <label for="due">Due</label>
