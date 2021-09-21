@@ -13,7 +13,7 @@ db = SQLAlchemy(app)
 
 #pythonanywhere上で時間取得がずれるため、それを補正するコード
 os.environ["TZ"] = "Asia/Tokyo"
-#time.tzset()
+time.tzset()
 
 #***********別ファイルに移植予定****************
 
@@ -148,7 +148,7 @@ def protected():
 def ac_create():
     if(request.method == "POST"):
 
-        ip_check()
+
 
         print("返事は返されているか？")
         print(request.form["resist_username"])
@@ -192,7 +192,7 @@ def ac_create():
                 return redirect('/login_top/')
     else:
 
-        
+        ip_check()        
 
 
         return render_template("account_create.html", fail_flag = False)
