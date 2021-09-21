@@ -34,17 +34,10 @@ def ip_check(func):
         access_IP.write(ip)
         access_IP.write("\n")
         access_IP.close
-        if request.remote_addr in ACCEPTED_IP:
+        if ip in ACCEPTED_IP:
             print('IP Check : OK')
             return func(*args, **kwargs)
         else:
-            access_IP = open('access_IP.txt', 'a', encoding='UTF-8')
-            access_IP.write(str(datetime.now()))
-            access_IP.write("\n")
-            #access_IP.write(request.remote_addr)
-            access_IP.write(ip)
-            access_IP.write("\n")
-            access_IP.close
             print("403")
             return abort(403)
     return wrapper
