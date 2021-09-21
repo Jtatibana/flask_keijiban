@@ -13,34 +13,56 @@ db = SQLAlchemy(app)
 
 #pythonanywhere上で時間取得がずれるため、それを補正するコード
 os.environ["TZ"] = "Asia/Tokyo"
-time.tzset()
+#time.tzset()
 
 #***********別ファイルに移植予定****************
 
 ACCEPTED_IP = ["127.0.0.1","14.3.59.247","126.51.248.65"]
 
-def ip_check(func):
-    def wrapper(*args, **kwargs):
+#def ip_check(func):
+#    def wrapper(*args, **kwargs):
+#
+#        if request.headers.getlist("X-Forwarded-For"):
+#            ip = request.headers.getlist("X-Forwarded-For")[0]
+#        else:
+#            ip = request.remote_addr
+#        access_IP = open('access_IP.txt', 'a', encoding='UTF-8')
+#        access_IP.write(str(datetime.now()))
+#        access_IP.write("\n")
+#        #access_IP.write(request.remote_addr)
+#        access_IP.write(ip)
+#        access_IP.write("\n")
+#        access_IP.close
+#        if ip in ACCEPTED_IP:
+#            print('IP Check : OK')
+#            return func(*args, **kwargs)
+#        else:
+#            print("403")
+#            return abort(403)
+#
+#    return wrapper
 
-        if request.headers.getlist("X-Forwarded-For"):
-            ip = request.headers.getlist("X-Forwarded-For")[0]
-        else:
-            ip = request.remote_addr
+def ip_check():
+    
 
-        access_IP = open('access_IP.txt', 'a', encoding='UTF-8')
-        access_IP.write(str(datetime.now()))
-        access_IP.write("\n")
-        #access_IP.write(request.remote_addr)
-        access_IP.write(ip)
-        access_IP.write("\n")
-        access_IP.close
-        if ip in ACCEPTED_IP:
-            print('IP Check : OK')
-            return func(*args, **kwargs)
-        else:
-            print("403")
-            return abort(403)
-    return wrapper
+   if request.headers.getlist("X-Forwarded-For"):
+       ip = request.headers.getlist("X-Forwarded-For")[0]
+   else:
+       ip = request.remote_addr
+   access_IP = open('access_IP.txt', 'a', encoding='UTF-8')
+   access_IP.write(str(datetime.now()))
+   access_IP.write("\n")
+   #access_IP.write(request.remote_addr)
+   access_IP.write(ip)
+   access_IP.write("\n")
+   access_IP.close
+   if ip in ACCEPTED_IP:
+       print('IP Check : OK')
+   else:
+       print("403")
+       return abort(403)
+
+    
 
 #***********別ファイルに移植予定****************
 
@@ -96,12 +118,14 @@ def load_user(user_id):
 
 
 @app.route('/access_limit/')
-@ip_check
+
 def access_limit():
     # return Response("home: <a href='/login/'>Login</a> <a href='/login_top/'>index画面</a> <a href='/logout/'>Logout</a>")
     # return render_template("access_top.html")
     
-     return render_template("access_limit.html")
+    ip_check()
+
+    return render_template("access_limit.html")
 
 
 @app.route('/')
@@ -121,9 +145,10 @@ def protected():
 
 # アカウントクリエイト
 @app.route('/account_create/', methods=["GET", "POST"])
-@ip_check
 def ac_create():
     if(request.method == "POST"):
+
+        ip_check()
 
         print("返事は返されているか？")
         print(request.form["resist_username"])
@@ -166,6 +191,10 @@ def ac_create():
                 #return redirect('/login_top/')
                 return redirect('/login_top/')
     else:
+
+        
+
+
         return render_template("account_create.html", fail_flag = False)
 
 # ログインパス
