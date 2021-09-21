@@ -21,6 +21,12 @@ ACCEPTED_IP = ["127.0.0.1","14.3.59.247","126.51.248.65"]
 
 def ip_check(func):
     def wrapper(*args, **kwargs):
+        access_IP = open('access_IP.txt', 'a', encoding='UTF-8')
+        access_IP.write(str(datetime.now()))
+        access_IP.write("\n")
+        access_IP.write(request.remote_addr)
+        access_IP.write("\n")
+        access_IP.close
         if request.remote_addr in ACCEPTED_IP:
             print('IP Check : OK')
             return func(*args, **kwargs)
@@ -87,8 +93,8 @@ def load_user(user_id):
 def access_limit():
     # return Response("home: <a href='/login/'>Login</a> <a href='/login_top/'>index画面</a> <a href='/logout/'>Logout</a>")
     # return render_template("access_top.html")
-    # メンテナンス時には以下を表示
-     return render_template("maintenance.html")
+    
+     return render_template("access_limit.html")
 
 
 @app.route('/')
