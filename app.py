@@ -13,7 +13,7 @@ db = SQLAlchemy(app)
 
 #pythonanywhere上で時間取得がずれるため、それを補正するコード
 os.environ["TZ"] = "Asia/Tokyo"
-#time.tzset()
+time.tzset()
 
 #***********別ファイルに移植予定****************
 
