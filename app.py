@@ -13,7 +13,7 @@ db = SQLAlchemy(app)
 
 #pythonanywhere上で時間取得がずれるため、それを補正するコード
 os.environ["TZ"] = "Asia/Tokyo"
-time.tzset()
+#time.tzset()
 
 #***********別ファイルに移植予定****************
 
@@ -222,9 +222,7 @@ def index():
         f.write("\n")
         f.write("========コメント内容========")
         f.write("\n")
-        f.write("\n")
         f.write("##################################")
-        f.write("\n\n")
         f.close
 
         #コメントの区切りをカウントする。
@@ -235,7 +233,7 @@ def index():
         f.close
 
         #カウントした区切り線をDBに渡し更新する。
-        for_num_comment_update = Board_status.get.query.get(bord_status_id)
+        for_num_comment_update = Board_status.query.get(bord_status_id)
         for_num_comment_update.num_comment = comment_count
         db.session.commit()
                 
@@ -270,12 +268,36 @@ def update(b_id):
         #テキストファイルがなかったら作成する↓要修正
         fi0 = open(board.b_title+str(board.b_id)+".txt", 'a', encoding='UTF-8')
         fi0.close
-        fi = open(board.b_title+str(board.b_id)+".txt", 'r', encoding='UTF-8')
-        all_comments = fi.read()
-        print(all_comments)
-        fi.close
+        #fi = open(board.b_title+str(board.b_id)+".txt", 'r', encoding='UTF-8')
+        #all_comments = fi.read()
+        #print(all_comments)
+        #fi.close
 
-        return render_template('update.html', board=board, all_comments=all_comments)
+
+        fi = open(board.b_title+str(board.b_id)+".txt", 'r', encoding='UTF-8')
+        listA = fi.read().split('##################################')
+
+        listD = list()
+
+        for i in listA:
+
+            listB = i.split('========コメント内容========')
+            listC = listB[0].split('\n')
+            
+            try:
+                listB[0] = listC[1]
+                listB[2] = listC[2]
+
+            except Exception:
+                print("errer")
+            print(f"listB = :{listB}")
+            listD.append(listB)
+        fi.close()
+        listD.pop()
+        print(listD)
+
+
+        return render_template('update.html', board=board, all_comments=listD)
     else:
         # post.title = request.form.get('title')
         # post.detail = request.form.get('detail')
@@ -301,9 +323,7 @@ def update(b_id):
             f.write("\n")
             f.write("========コメント内容========")
             f.write("\n")
-            f.write("\n")
             f.write("##################################")
-            f.write("\n\n")
             
             f.close
 

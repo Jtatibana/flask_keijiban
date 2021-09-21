@@ -8,18 +8,33 @@
 
 <p>{{ current_user.name }} さんようこそ！</p>
 
-<a style="white-space : pre-wrap;">{{ all_comments }} ←今までの書き込み</a>
+{% for comment in all_comments %}
+
+
+  <div class="card border-success mb-3" style="max-width: 50rem;">
+    <div class="card-header bg-transparent border-success">{{ comment[0] }}</div>
+    <div class="card-body text-success">
+      <p class="card-text">{{ comment[1] }}</p>
+    </div>
+    <div class="card-footer bg-transparent border-success">{{ comment[2] }}</div>
+  </div>
+
+{% endfor %}
+
+
 <form class="m-5" action="/login_top/update/{{ board.b_id }}" method="POST">
 
   <input type="hidden" name="username"value="{{ current_user.name }}">
   <input type="hidden" name="title"value="{{ board.b_title }}">
 
 
-    <div class="mb-3 pd-3">
-        <label for="detail">コメント入力欄</label>
-        <textarea class="form-control, style="white-space : pre-wrap;", " name="detail"></textarea>
-    </div>
+<div class="form-floating">
+  <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" name="detail"></textarea>
+  <label for="floatingTextarea">Comments</label>
+</div>
 
+
+  </br>
     <a class="btn btn-outline-primary" href="/login_top/" role="button">掲示板一覧に戻る</a>
     <button type="submit" class="btn btn-primary">発言する</button>
   </form>
