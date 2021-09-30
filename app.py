@@ -354,6 +354,7 @@ def update(b_id):
                 print(key, value)
 
             
+            f.write("\n")
             f.write("発言者："+request.form.get('username'))
             f.write("\n")
             f.write(str(datetime.now()))
