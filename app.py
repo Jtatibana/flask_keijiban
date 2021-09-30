@@ -347,7 +347,7 @@ def update(b_id):
 
         if request.form.get('detail') != "":
             print(request.form.get('detail'))
-            f = open(request.form.get('title')+str(board.b_id)+'.txt', 'a', encoding='UTF-8')
+            f = open(request.form.get('title')+str(board.b_id)+'.txt', 'a', encoding='UTF-8', newline="\n" )
 
             for key, value in request.form.items():
                 print("===============")
