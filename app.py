@@ -11,9 +11,9 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo.db'
 db = SQLAlchemy(app)
 
-#pythonanywhere上で時間取得がずれるため、それを補正するコード
-os.environ["TZ"] = "Asia/Tokyo"
-time.tzset()
+#pythonanywhere上で時間取得がずれるため、それを補正するコード　ローカル環境下ではコメントアウト
+#os.environ["TZ"] = "Asia/Tokyo"
+#time.tzset()
 
 #***********別ファイルに移植予定****************
 
