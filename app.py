@@ -16,8 +16,8 @@ db = SQLAlchemy(app)
 #time.tzset()
 
 #***********別ファイルに移植予定****************
-
-ACCEPTED_IP = ["127.0.0.1","14.3.59.247","126.51.248.65"]
+#通信を許すIPアドレスを指定
+ACCEPTED_IP = ["*.*.*.*"]
 
 #def ip_check(func):
 #    def wrapper(*args, **kwargs):

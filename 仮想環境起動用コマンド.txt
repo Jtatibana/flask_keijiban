@@ -1,5 +1,0 @@
-webアプリ用仮想環境実行コマンド
-
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
-
-flask_env/Scripts/activate
